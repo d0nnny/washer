@@ -41,6 +41,7 @@ jobs:
                 context: ./jokes-app-mern/API-jokes
                 file: ./jokes-app-mern/API-jokes/Dockerfile.prod
                 push: true
+                platforms: linux/amd64
                 tags: ${{ steps.meta.outputs.tags }}
 
     build-image-react:
@@ -69,6 +70,7 @@ jobs:
                 context: ./jokes-app-mern/react-client
                 file: ./jokes-app-mern/react-client/Dockerfile.prod
                 push: true
+                platforms: linux/amd64
                 build-args: 
                     VITE_API_BASE_URL=http://ECSLoadbalancer-163340881.us-east-1.elb.amazonaws.com
                 tags: ${{ steps.meta.outputs.tags }}  
