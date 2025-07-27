@@ -34,7 +34,7 @@ app.get('/getJokes',async (req,res)=>{
 })
 
 app.get('/',(req,res)=>{
-   res.json({message:"application is up and running v3"})
+   res.json({message:"application is up and running v4 - on ON ECS using CI CD"})
 })
 
 app.post('/post-joke',async (req,res)=>{

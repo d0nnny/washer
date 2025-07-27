@@ -9,6 +9,11 @@ env:
     NODE_IMAGE_NAME: ecs-demo-node
     REACT_IMAGE_NAME: ecs-demo-client
     AWS_REGION: us-east-1
+    ECS_CLUSTER: ECSdemocluster
+    ECS_SERVICE: ECSdemoservice
+    ECS_TASK_DEFINITION: ECSdemotd
+    NODE_CONTAINER_NAME: nodeappcontainer
+    REACT_CONTAINER_NAME: reactappcontainer
 jobs:
     build-image-node: 
         runs-on: ubuntu-latest
@@ -80,3 +85,23 @@ jobs:
                 aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
+            - name: Add Image details of node app
+              id: task-def
+              uses: aws-actions/amazon-ecs-render-task-definition@v1
+              with:
+                   task-definition-family: ${{ env.ECS_TASK_DEFINITION }}
+                   container-name: ${{env.NODE_CONTAINER_NAME }}
+                   image: ${{ vars.DOCKER_USERNAME }}/${{ env.NODE_IMAGE_NAME }}
+            - name: Modify Amazon ECS task definition with second container for react
+              id: taskdef-react
+              uses: aws-actions/amazon-ecs-render-task-definition@v1
+              with:
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                container-name: ${{ env.REACT_CONTAINER_NAME }}
+                image: ${{ vars.DOCKER_USERNAME }}/${{ env.REACT_IMAGE_NAME }}
+            - name: Deploy to Amazon ECS service
+              uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+              with:
+                task-definition: ${{ steps.taskdef-react.outputs.task-definition }}
+                service: ${{ env.ECS_SERVICE }}
+                cluster: ${{ env.ECS_CLUSTER }}
