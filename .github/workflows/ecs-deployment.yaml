@@ -13,7 +13,7 @@ env:
     ECS_SERVICE: ECSdemoservice
     ECS_TASK_DEFINITION: ECSdemotd
     NODE_CONTAINER_NAME: nodeappcontainer
-    REACT_CONTAINER_NAME: reactappcontainer
+    REACT_CONTAINER_NAME: reacteappcontainer
 jobs:
     build-image-node: 
         runs-on: ubuntu-latest
