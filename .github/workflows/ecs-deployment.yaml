@@ -6,8 +6,8 @@ on:
     workflow_dispatch:
 
 env:    
-    NODE_IMAGE_NAME: washer
-  
+    NODE_IMAGE_NAME: ecs-demo-node
+    REACT_IMAGE_NAME: ecs-demo-client
 jobs:
     build-image-node: 
         runs-on: ubuntu-latest
@@ -33,6 +33,36 @@ jobs:
               uses: docker/build-push-action@v6.15.0
               with:
                 context: ./jokes-app-mern/API-jokes
-                file: ./jokes-app-mern/API-jokes/Dockerfile
+                file: ./jokes-app-mern/API-jokes/Dockerfile.prod
                 push: true
                 tags: ${{ steps.meta.outputs.tags }}
+
+    build-image-react: 
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3.4.0
+              with:
+                username: ${{ vars.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: added details to image
+              id: meta
+              uses: docker/metadata-action@v5.7.0
+              with:
+                images: ${{ vars.DOCKER_USERNAME }}/${{ env.REACT_IMAGE_NAME }}
+                tags: |
+                    latest
+                    v1.0.${{ github.run_number }}                     
+            - name: Build and push Docker image
+              id: push
+              uses: docker/build-push-action@v6.15.0
+              with:
+                context: ./jokes-app-mern/react-client
+                file: ./jokes-app-mern/react-client/Dockerfile.prod
+                push: true
+                build-args: 
+                    VITE_API_BASE_URL=http://ECSLoadbalancer-163340881.us-east-1.elb.amazonaws.com
+                tags: ${{ steps.meta.outputs.tags }}                
