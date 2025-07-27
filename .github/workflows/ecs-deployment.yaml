@@ -96,7 +96,7 @@ jobs:
               id: taskdef-react
               uses: aws-actions/amazon-ecs-render-task-definition@v1
               with:
-                task-definition-family: ${{ steps.task-def.outputs.task-definition }}
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
                 container-name: ${{ env.REACT_CONTAINER_NAME }}
                 image: ${{ vars.DOCKER_USERNAME }}/${{ env.REACT_IMAGE_NAME }}
             - name: Deploy to Amazon ECS service
