@@ -25,7 +25,7 @@ jobs:
               uses: docker/metadata-action@v5.7.0
               with:
                 images: ${{ vars.DOCKER_USERNAME }}/${{ env.NODE_IMAGE_NAME }}
-                tags:
+                tags: |
                     latest
                     v1.0.${{ github.run_number }}                     
             - name: Build and push Docker image
